@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex Trading Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    #dashboard {
+      max-width: 600px;
+      margin: auto;
+      padding: 1rem;
+    }
+
+    header, section, footer {
+      background: #ffffff;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      margin-bottom: 0.5rem;
+      color: #222;
+    }
+
+    #market-data, #performance-metrics {
+      font-size: 1.2rem;
+      color: #444;
+    }
+
+    #trade-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    #trade-list li {
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background: #eef2f7;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="dashboard">
+    <header>
+      <h1>Forex Trading Bot</h1>
+      <p>Live Market • Auto Trades • Real-Time Dashboard</p>
+    </header>
+
+    <main>
+      <section id="market-status">
+        <h2>Market Monitor</h2>
+        <p id="market-data">Loading...</p>
+      </section>
+
+      <section id="trade-log">
+        <h2>Trade Activity</h2>
+        <ul id="trade-list"></ul>
+      </section>
+
+      <section id="performance">
+        <h2>Performance</h2>
+        <p id="performance-metrics">Loading performance data...</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Forex Bot</p>
+    </footer>
+  </div>
+
+  <script>
+    const trades = [];
+
+    function fetchMarketData() {
+      const price = (Math.random() * (20 - 18) + 18).toFixed(4);
+      const signal = Math.random() > 0.5 ? "BUY" : "SELL";
+      document.getElementById("market-data").innerText = 
+        `EUR/USD Price: ${price} | Signal: ${signal}`;
+      executeTrade({ price, signal });
+    }
+
+    function executeTrade({ price, signal }) {
+      const trade = {
+        time: new Date().toLocaleTimeString(),
+        action: signal,
+        price: parseFloat(price)
+      };
+      trades.unshift(trade);
+      updateTradeList();
+      updatePerformance();
+    }
+
+    function updateTradeList() {
+      const list = document.getElementById("trade-list");
+      list.innerHTML = trades.map(t =>
+        `<li>${t.time} - ${t.action} @ ${t.price}</li>`
+      ).join("");
+    }
+
+    function updatePerformance() {
+      let profit = 0;
+      trades.forEach((trade, index) => {
+        const next = trades[index + 1];
+        if (next && trade.action === "BUY" && next.action === "SELL") {
+          profit += (next.price - trade.price);
+        }
+      });
+
+      document.getElementById("performance-metrics").innerText = 
+        `Simulated P/L: $${profit.toFixed(4)}`;
+    }
+
+    setInterval(fetchMarketData, 30000);
+    fetchMarketData();
+  </script>
+</body>
+</html>
