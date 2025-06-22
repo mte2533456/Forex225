@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex Trading Bot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      margin: 0;
+      padding: 0;
+      color: #f5f7fa;
+    }
+
+    #dashboard {
+      max-width: 800px;
+      margin: auto;
+      padding: 1rem;
+    }
+
+    header, section, footer {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 1rem 0;
+      padding: 1.2rem;
+      border-radius: 14px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.05);
+    }
+
+    h1, h2 {
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+
+    p {
+      margin: 0.4rem 0;
+    }
+
+    #market-data, #performance-metrics, #strength-meter {
+      font-size: 1.1rem;
+    }
+
+    #trade-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    #trade-list li {
+      padding: 0.6rem;
+      margin-bottom: 0.5rem;
+      border-left: 5px solid;
+      border-radius: 10px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s ease;
+    }
+
+    #trade-list li:hover {
+      transform: scale(1.02);
+    }
+
+    .buy {
+      border-color: #00e676;
+      color: #a3f7bf;
+    }
+
+    .sell {
+      border-color: #ff1744;
+      color: #ff8a80;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #00e5ff;
+      text-shadow: 0 0 6px #00e5ff;
+    }
+
+    .stat-box {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.6rem;
+      color: #eee;
+      font-size: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="dashboard">
+    <header>
+      <h1>Forex Trading Bot</h1>
+      <p>Real-Time Simulated Trades, Confidence, and Strength Metrics</p>
+    </header>
+
+    <main>
+      <section id="market-status">
+        <h2>Market Monitor</h2>
+        <p id="market-data">Loading...</p>
+        <p id="strength-meter">Currency Strength: Loading...</p>
+      </section>
+
+      <section id="trade-log">
+        <h2>Trade Activity</h2>
+        <ul id="trade-list"></ul>
+        <div class="stat-box">
+          <span>Buys: <span id="buy-count">0</span></span>
+          <span>Sells: <span id="sell-count">0</span></span>
+        </div>
+      </section>
+
+      <section id="performance">
+        <h2>Performance</h2>
+        <p id="performance-metrics">Loading performance data...</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Forex Bot • Built for high-focus & speed</p>
+    </footer>
+  </div>
+
+  <script>
+    const trades = [];
+    let buyCount = 0;
+    let sellCount = 0;
+
+    function getSignalConfidence() {
+      return Math.floor(Math.random() * 51) + 50; // 50% to 100%
+    }
+
+    function getTradeVolume() {
+      return Math.floor(Math.random() * 5 + 1) * 1000; // 1000 to 5000 units
+    }
+
+    function fetchMarketData() {
+      const price = (Math.random() * (20 - 18) + 18).toFixed(4);
+      const signal = Math.random() > 0.5 ? "BUY" : "SELL";
+      const confidence = getSignalConfidence();
+      const volume = getTradeVolume();
+
+      document.getElementById("market-data").innerHTML =
+        `EUR/USD Price: <span class="highlight">${price}</span> | Signal: <span class="highlight">${signal}</span> | Confidence: <span class="highlight">${confidence}%</span>`;
+
+      const strength = signal === "BUY"
+        ? `EUR strong / USD weak`
+        : `EUR weak / USD strong`;
+      document.getElementById("strength-meter").innerText = `Currency Strength: ${strength}`;
+
+      executeTrade({ price, signal, confidence, volume });
+    }
+
+    function executeTrade({ price, signal, confidence, volume }) {
+      const trade = {
+        time: new Date().toLocaleTimeString(),
+        action: signal,
+        price: parseFloat(price),
+        confidence,
+        volume
+      };
+      trades.unshift(trade);
+      if (signal === "BUY") buyCount++; else sellCount++;
+      updateTradeList();
+      updatePerformance();
+    }
+
+    function updateTradeList() {
+      const list = document.getElementById("trade-list");
+      list.innerHTML = trades.slice(0, 20).map(t => `
+        <li class="${t.action.toLowerCase()}">
+          ${t.time} - ${t.action} @ ${t.price} | Vol: ${t.volume} | Conf: ${t.confidence}%
+        </li>
+      `).join("");
+      document.getElementById("buy-count").textContent = buyCount;
+      document.getElementById("sell-count").textContent = sellCount;
+    }
+
+    function updatePerformance() {
+      let profit = 0;
+      for (let i = 0; i < trades.length - 1; i++) {
+        const curr = trades[i];
+        const next = trades[i + 1];
+        if (curr.action === "BUY" && next.action === "SELL") {
+          const tradeProfit = (next.price - curr.price) * (curr.volume / 1000);
+          profit += tradeProfit;
+        }
+      }
+      document.getElementById("performance-metrics").innerHTML =
+        `Simulated P/L: <span class="highlight">$${profit.toFixed(2)}</span>`;
+    }
+
+    setInterval(fetchMarketData, 1000);
+    fetchMarketData();
+  </script>
+</body>
+</html>
